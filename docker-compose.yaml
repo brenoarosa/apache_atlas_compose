@@ -18,8 +18,8 @@ services:
 
   atlas:
     build:
-      context: .
-      dockerfile: atlas/Dockerfile
+      context: docker-apache-atlas
+      dockerfile: ./Dockerfile
     entrypoint: /opt/apache-atlas-2.1.0/bin/atlas_start.py
     ports:
       - "21000:21000"
