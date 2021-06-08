@@ -21,14 +21,21 @@ RUN apt-get update \
         python \
         openjdk-8-jdk-headless \
         patch \
-        unzip
+        unzip \
+        curl
 
 RUN cd /tmp/ && \
     wget -qO- ${ATLAS_SOURCE} > apache-atlas-sources-${ATLAS_VERSION}.tar.gz && \
     tar -xvzf apache-atlas-sources-${ATLAS_VERSION}.tar.gz 
 
+# build from source (FIXME)
+#RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} && \
+#    mvn clean -DskipTests package -Pdist,embedded-hbase-solr,berkeley-elasticsearch -B
+
+# OR download pre built
 RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} && \
-    mvn clean -DskipTests package -Pdist,embedded-hbase-solr -B
+    mkdir -p distro/target/ && \
+    wget -qO- https://5a-scp-test.s3.amazonaws.com/apache-atlas-2.1.0-server_dist_embedded-hbase-solr.tar.gz > distro/target/apache-atlas-${ATLAS_VERSION}-server.tar.gz
 
 # copy built version for output folder
 RUN tar -xzf /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/target/apache-atlas-${ATLAS_VERSION}-server.tar.gz -C /opt && \
@@ -36,6 +43,7 @@ RUN tar -xzf /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/target/apache-atl
 
 VOLUME ["/opt/atlas/conf", "/opt/atlas/logs"]
 
+# input configuration files
 COPY atlas_start.py.patch atlas_config.py.patch ${ATLAS_HOME}/bin/
 
 RUN cd ${ATLAS_HOME}/bin \
@@ -44,6 +52,7 @@ RUN cd ${ATLAS_HOME}/bin \
 
 COPY conf/hbase/hbase-site.xml.template ${ATLAS_HOME}/conf/hbase/hbase-site.xml.template
 COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
+#COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
 
 RUN cd ${ATLAS_HOME} \
     && ./bin/atlas_start.py -setup || true

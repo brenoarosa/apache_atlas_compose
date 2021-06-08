@@ -34,15 +34,27 @@
 #
 # See the configuration documentation for more information about configuring the various  storage backends.
 #
-atlas.graph.storage.backend=hbase2
-atlas.graph.storage.hbase.table=apache_atlas_janus
 
+atlas.graph.storage.backend=cql
+atlas.graph.storage.hostname=10.36.2.105
+atlas.graph.storage.cassandra.keyspace=JanusGraph
+atlas.graph.storage.clustername=cassandra
+atlas.graph.storage.port=9042
+
+#atlas.graph.storage.backend=hbase2
+#atlas.graph.storage.hbase.table=apache_atlas_janus
 #Hbase
 #For standalone mode , specify localhost
 #for distributed mode, specify zookeeper quorum here
-atlas.graph.storage.hostname=localhost
-atlas.graph.storage.hbase.regions-per-server=1
-atlas.graph.storage.lock.wait-time=10000
+#atlas.graph.storage.hostname=ip-10-36-4-38.ec2.internal
+#atlas.graph.storage.hbase.regions-per-server=1
+#atlas.graph.storage.lock.wait-time=10000
+#atlas.graph.storage.hbase.skip-schema-schek=true
+
+#In order to use Cassandra as a backend, comment out the hbase specific properties above, and uncomment the
+#the following properties
+#atlas.graph.storage.clustername=
+#atlas.graph.storage.port=
 
 # Gremlin Query Optimizer
 #
@@ -70,41 +82,55 @@ atlas.graph.storage.lock.wait-time=10000
 # org.apache.atlas.repository.audit.CassandraBasedAuditRepository - log entity changes to cassandra
 # org.apache.atlas.repository.audit.NoopEntityAuditRepository - disable the audit repository
 #
-atlas.EntityAuditRepository.impl=org.apache.atlas.repository.audit.HBaseBasedAuditRepository
+atlas.EntityAuditRepository.impl=org.apache.atlas.repository.audit.CassandraBasedAuditRepository
 
 # if Cassandra is used as a backend for audit from the above property, uncomment and set the following
 # properties appropriately. If using the embedded cassandra profile, these properties can remain
 # commented out.
-# atlas.EntityAuditRepository.keyspace=atlas_audit
-# atlas.EntityAuditRepository.replicationFactor=1
+atlas.EntityAuditRepository.keyspace=atlas_audit
+atlas.EntityAuditRepository.replicationFactor=1
 
 
 # Graph Search Index
-atlas.graph.index.search.backend=solr
+# atlas.graph.index.search.backend=solr
 
 #Solr
 #Solr cloud mode properties
-atlas.graph.index.search.solr.mode=cloud
-atlas.graph.index.search.solr.zookeeper-url=localhost:2181
-atlas.graph.index.search.solr.zookeeper-connect-timeout=60000
-atlas.graph.index.search.solr.zookeeper-session-timeout=60000
-atlas.graph.index.search.solr.wait-searcher=true
+# atlas.graph.index.search.solr.mode=cloud
+# atlas.graph.index.search.solr.zookeeper-url=ip-10-36-7-122.ec2.internal:2181
+# atlas.graph.index.search.solr.zookeeper-connect-timeout=60000
+# atlas.graph.index.search.solr.zookeeper-session-timeout=60000
+# atlas.graph.index.search.solr.wait-searcher=true
 
 #Solr http mode properties
-#atlas.graph.index.search.solr.mode=http
-#atlas.graph.index.search.solr.http-urls=http://localhost:8983/solr
+# atlas.graph.index.search.solr.mode=http
+# atlas.graph.index.search.solr.http-urls=http://localhost:8983/solr
 
+# ElasticSearch support (Tech Preview)
+# Comment out above solr configuration, and uncomment the following two lines. Additionally, make sure the
+# hostname field is set to a comma delimited set of elasticsearch master nodes, or an ELB that fronts the masters.
+#
+# Elasticsearch does not provide authentication out of the box, but does provide an option with the X-Pack product
+# https://www.elastic.co/products/x-pack/security
+#
+# Alternatively, the JanusGraph documentation provides some tips on how to secure Elasticsearch without additional
+# plugins: https://docs.janusgraph.org/latest/elasticsearch.html
+atlas.graph.index.search.backend=elasticsearch
+atlas.graph.index.search.directory=data/es
+atlas.graph.index.search.hostname=vpc-atlas-forno-ka6jkgms4x5nfkl4uepmtjezfi.us-east-1.es.amazonaws.com:443
+atlas.graph.index.search.elasticsearch.client-only=true
+atlas.graph.index.search.elasticsearch.ssl.enabled=true
 # Solr-specific configuration property
-atlas.graph.index.search.max-result-set-size=150
+# atlas.graph.index.search.max-result-set-size=150
 
 #########  Import Configs  #########
 #atlas.import.temp.directory=/temp/import
 
 #########  Notification Configs  #########
-atlas.notification.embedded=true
+atlas.notification.embedded=false
 atlas.kafka.data=${sys:atlas.home}/data/kafka
-atlas.kafka.zookeeper.connect=localhost:9026
-atlas.kafka.bootstrap.servers=localhost:9027
+atlas.kafka.zookeeper.connect=z-1.kafka-forno.ytlhbv.c10.kafka.us-east-1.amazonaws.com:2181,z-3.kafka-forno.ytlhbv.c10.kafka.us-east-1.amazonaws.com:2181,z-2.kafka-forno.ytlhbv.c10.kafka.us-east-1.amazonaws.com:2181
+atlas.kafka.bootstrap.servers=kafka-forno-0.forno.data.quintoandar.com.br:9092,kafka-forno-1.forno.data.quintoandar.com.br:9092
 atlas.kafka.zookeeper.session.timeout.ms=400
 atlas.kafka.zookeeper.connection.timeout.ms=200
 atlas.kafka.zookeeper.sync.time.ms=20
@@ -191,14 +217,14 @@ atlas.authentication.method.file.filename=${sys:atlas.home}/conf/users-credentia
 #atlas.jaas.KafkaClient.option.principal = atlas/_HOST@EXAMPLE.COM
 
 #########  Server Properties  #########
-atlas.rest.address=http://localhost:21000
+atlas.rest.address=10.36.7.122:21000
 # If enabled and set to true, this will run setup steps when the server starts
 #atlas.server.run.setup.on.start=false
 
 #########  Entity Audit Configs  #########
-atlas.audit.hbase.tablename=apache_atlas_entity_audit
-atlas.audit.zookeeper.session.timeout.ms=1000
-atlas.audit.hbase.zookeeper.quorum=localhost:2181
+#atlas.audit.hbase.tablename=apache_atlas_entity_audit
+#atlas.audit.zookeeper.session.timeout.ms=1000
+#atlas.audit.hbase.zookeeper.quorum=ip-10-36-4-38.ec2.internal:2181
 
 #########  High Availability Configuration ########
 atlas.server.ha.enabled=false

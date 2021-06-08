@@ -34,7 +34,7 @@
 #
 # See the configuration documentation for more information about configuring the various  storage backends.
 #
-atlas.graph.storage.backend=hbase2
+atlas.graph.storage.backend=berkeleyje
 atlas.graph.storage.hbase.table=apache_atlas_janus
 
 #Hbase
@@ -70,7 +70,7 @@ atlas.graph.storage.lock.wait-time=10000
 # org.apache.atlas.repository.audit.CassandraBasedAuditRepository - log entity changes to cassandra
 # org.apache.atlas.repository.audit.NoopEntityAuditRepository - disable the audit repository
 #
-atlas.EntityAuditRepository.impl=org.apache.atlas.repository.audit.HBaseBasedAuditRepository
+atlas.EntityAuditRepository.impl=org.apache.atlas.repository.audit.NoopEntityAuditRepository
 
 # if Cassandra is used as a backend for audit from the above property, uncomment and set the following
 # properties appropriately. If using the embedded cassandra profile, these properties can remain
@@ -80,7 +80,7 @@ atlas.EntityAuditRepository.impl=org.apache.atlas.repository.audit.HBaseBasedAud
 
 
 # Graph Search Index
-atlas.graph.index.search.backend=solr
+atlas.graph.index.search.backend=elasticsearch
 
 #Solr
 #Solr cloud mode properties

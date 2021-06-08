@@ -21,11 +21,11 @@ services:
   #   context: atlas
   #   dockerfile: ./Dockerfile
   # entrypoint: /opt/apache-atlas-2.1.0/bin/atlas_start.py
+  # container_name: atlas
   # ports:
   #   - "21000:21000"
   # networks:
   #   - atlas-test
-  # container_name: atlas
   # depends_on:
   #   elasticsearch:
   #     condition: service_healthy
@@ -35,11 +35,11 @@ services:
       context: docker-apache-atlas
       dockerfile: ./Dockerfile
     entrypoint: /opt/apache-atlas-2.1.0/bin/atlas_start.py
+    container_name: atlas_sburn
     ports:
       - "21000:21000"
     networks:
       - atlas-test
-    container_name: atlas_sburn
     depends_on:
       elasticsearch:
         condition: service_healthy
