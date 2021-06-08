@@ -52,7 +52,7 @@ RUN cd ${ATLAS_HOME}/bin \
 
 COPY conf/hbase/hbase-site.xml.template ${ATLAS_HOME}/conf/hbase/hbase-site.xml.template
 COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
-#COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
+COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
 
 RUN cd ${ATLAS_HOME} \
     && ./bin/atlas_start.py -setup || true
