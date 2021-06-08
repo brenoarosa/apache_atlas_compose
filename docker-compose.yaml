@@ -16,7 +16,21 @@ services:
       timeout: 10s
       retries: 5
 
-  atlas:
+  #atlas:
+  #  build:
+  #   context: atlas
+  #   dockerfile: ./Dockerfile
+  # entrypoint: /opt/apache-atlas-2.1.0/bin/atlas_start.py
+  # ports:
+  #   - "21000:21000"
+  # networks:
+  #   - atlas-test
+  # container_name: atlas
+  # depends_on:
+  #   elasticsearch:
+  #     condition: service_healthy
+
+  atlas_sburn:
     build:
       context: docker-apache-atlas
       dockerfile: ./Dockerfile

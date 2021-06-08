@@ -1,0 +1,28 @@
+version: "3.9"  # optional since v1.27.0
+services:
+  atlas:
+    image: test:latest
+    entrypoint: /opt/atlas/bin/atlas_start.py
+    ports:
+      - "21000:21000"
+    networks:
+      - atlas-test
+    container_name: atlas
+
+  #atlas_sburn:
+  #  build:
+  #    context: docker-apache-atlas
+  #    dockerfile: ./Dockerfile
+  #  entrypoint: /opt/apache-atlas-2.1.0/bin/atlas_start.py
+  #  ports:
+  #    - "21000:21000"
+  #  networks:
+  #    - atlas-test
+  #  container_name: atlas_sburn
+  #  depends_on:
+  #    elasticsearch:
+  #      condition: service_healthy
+
+networks:
+  atlas-test:
+    driver: bridge
