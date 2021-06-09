@@ -54,16 +54,16 @@ COPY conf/hbase/hbase-site.xml.template ${ATLAS_HOME}/conf/hbase/hbase-site.xml.
 COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
 COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
 
-RUN cd ${ATLAS_HOME} \
-    && ./bin/atlas_start.py -setup || true
+#RUN cd ${ATLAS_HOME} \
+#    && ./bin/atlas_start.py -setup || true
 
 # run one time during build to reduce startup time
-RUN cd ${ATLAS_HOME} \
-    && ./bin/atlas_start.py & \
-    touch ${ATLAS_HOME}/logs/application.log \
-    tail -f ${ATLAS_HOME}/logs/application.log | sed '/AtlasAuthenticationFilter.init(filterConfig=null)/ q' \
-    && sleep 10 \
-    && ${ATLAS_HOME}/bin/atlas_stop.py
+#RUN cd ${ATLAS_HOME} \
+#    && ./bin/atlas_start.py & \
+#    touch ${ATLAS_HOME}/logs/application.log \
+#    tail -f ${ATLAS_HOME}/logs/application.log | sed '/AtlasAuthenticationFilter.init(filterConfig=null)/ q' \
+#    && sleep 10 \
+#    && ${ATLAS_HOME}/bin/atlas_stop.py
 
 # clean apt
 #RUN apt-get clean && \
