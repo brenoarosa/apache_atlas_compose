@@ -35,7 +35,7 @@ RUN cd /tmp/ && \
 # OR download pre built
 RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} && \
     mkdir -p distro/target/ && \
-    wget -qO- https://5a-scp-test.s3.amazonaws.com/apache-atlas-2.1.0-server_dist_embedded-hbase-solr.tar.gz > distro/target/apache-atlas-${ATLAS_VERSION}-server.tar.gz
+    wget -qO- https://5a-scp-test.s3.amazonaws.com/apache-atlas-2.1.0-ec2.tar.gz > distro/target/apache-atlas-${ATLAS_VERSION}-server.tar.gz
 
 # copy built version for output folder
 RUN tar -xzf /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/target/apache-atlas-${ATLAS_VERSION}-server.tar.gz -C /opt && \
@@ -52,6 +52,7 @@ RUN cd ${ATLAS_HOME}/bin \
 
 COPY conf/hbase/hbase-site.xml.template ${ATLAS_HOME}/conf/hbase/hbase-site.xml.template
 COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
+COPY conf/atlas-log4j.xml ${ATLAS_HOME}/conf/atlas-log4j.xml
 COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
 
 #RUN cd ${ATLAS_HOME} \

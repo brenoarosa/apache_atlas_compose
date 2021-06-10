@@ -56,10 +56,10 @@ export JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 #export ATLAS_EXPANDED_WEBAPP_DIR=
 
 # indicates whether or not a local instance of HBase should be started for Atlas
-export MANAGE_LOCAL_HBASE=true
+export MANAGE_LOCAL_HBASE=false
 
 # indicates whether or not a local instance of Solr should be started for Atlas
-export MANAGE_LOCAL_SOLR=true
+export MANAGE_LOCAL_SOLR=false
 
 # indicates whether or not cassandra is the embedded backend for Atlas
 export MANAGE_EMBEDDED_CASSANDRA=false

@@ -1,7 +1,7 @@
 version: "3.9"  # optional since v1.27.0
 services:
   elasticsearch:
-    image: library/elasticsearch:5.6.4
+    image: library/elasticsearch:6.7.0
     container_name: elasticsearch
     ports:
       - "9200:9200"
@@ -16,6 +16,24 @@ services:
       timeout: 10s
       retries: 5
 
+  cassandra:
+    image: cassandra:3.11.10
+    container_name: cassandra
+    ports:
+      - "7000:7000"
+      - "9042:9042"
+    environment:
+      - CASSANDRA_CLUSTER_NAME=cassandra
+      - CASSANDRA_SEEDS=cassandra
+    networks:
+      - atlas-test
+    healthcheck:
+      test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
+      interval: 5s
+      timeout: 5s
+      retries: 60
+
+
   atlas:
     build:
       context: atlas
@@ -29,6 +47,10 @@ services:
     depends_on:
       elasticsearch:
         condition: service_healthy
+      cassandra:
+        condition: service_healthy
+    environment:
+      - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 networks:
   atlas-test:
