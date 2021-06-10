@@ -528,17 +528,19 @@ def wait_for_startup(confdir, wait):
             sleep(1)
 
         if count > wait:
-            s.close()
+	    s.close()
             sys.stdout.write('\nAtlas Web-UI startup timed out! But, wait for it...')
             sys.stdout.flush()
-            break
+	    break
 
         if not os.path.exists(pid_file):
             sys.stdout.write('\nApache Atlas startup failed!\nCheck logs: /opt/apache-atlas-2.1.0/logs/application.log')
             sys.stdout.flush()
-            exit()
+	    exit()
+	    break
 
         count = count + 1
+
 
     sys.stdout.write('\n')
 
@@ -574,14 +576,14 @@ def run_solr(dir, action, zk_url = None, port = None, logdir = None, wait=True):
 
     if zk_url is None:
         if port is None:
-            cmd = [os.path.join(dir, solrScript), action]
+            cmd = [os.path.join(dir, solrScript), action, '-force']
         else:
-            cmd = [os.path.join(dir, solrScript), action, '-p', str(port)]
+            cmd = [os.path.join(dir, solrScript), action, '-force', '-p', str(port)]
     else:
         if port is None:
-            cmd = [os.path.join(dir, solrScript), action, '-z', zk_url]
+            cmd = [os.path.join(dir, solrScript), action, '-force', '-z', zk_url]
         else:
-            cmd = [os.path.join(dir, solrScript), action, '-z', zk_url, '-p', port]
+            cmd = [os.path.join(dir, solrScript), action, '-force', '-z', zk_url, '-p', port]
 
     return runProcess(cmd, logdir, False, wait)
 
@@ -591,7 +593,7 @@ def create_solr_collection(dir, confdir, index, logdir = None, wait=True):
     if IS_WINDOWS:
         solrScript = "solr.cmd"
 
-    cmd = [os.path.join(dir, solrScript), 'create', '-c', index, '-d', confdir,  '-shards',  solrShards(),  '-replicationFactor', solrReplicationFactor()]
+    cmd = [os.path.join(dir, solrScript), 'create', '-c', index, '-d', confdir,  '-shards',  solrShards(),  '-replicationFactor', solrReplicationFactor(), '-force']
 
     return runProcess(cmd, logdir, False, wait)
 
@@ -710,3 +712,4 @@ def convertCygwinPath(path, isClasspath=False):
     windowsPath = subprocess.Popen(cygpathArgs, stdout=subprocess.PIPE).communicate()[0]
     windowsPath = windowsPath.strip()
     return windowsPath
+

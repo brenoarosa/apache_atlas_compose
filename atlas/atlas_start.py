@@ -35,7 +35,6 @@ def main():
     is_setup = (len(sys.argv)>1) and sys.argv[1] is not None and sys.argv[1] == '-setup'
 
     atlas_home = mc.atlasDir()
-    print("Atlas home: " + atlas_home) 
     confdir = mc.dirMustExist(mc.confDir(atlas_home))
     mc.executeEnvSh(confdir)
     logdir = mc.dirMustExist(mc.logDir(atlas_home))
@@ -81,9 +80,6 @@ def main():
                        + os.path.join(web_app_dir, "atlas", "WEB-INF", "classes" ) + p \
                        + os.path.join(web_app_dir, "atlas", "WEB-INF", "lib", "*" )  + p \
                        + os.path.join(atlas_home, "libext", "*")
-                       #+ p \
-                       #+ os.path.join(atlas_home, "libext", "janusgraph-es-0.5.1.jar") + p \
-                       #+ os.path.join(atlas_home, "/opt/hbase/lib/", "*")
 
     is_hbase = mc.is_hbase(confdir)
 
@@ -122,7 +118,7 @@ def main():
         mc.run_hbase_action(mc.hbaseBinDir(atlas_home), "start", hbase_conf_dir, logdir)
         print "hbase started."
         if is_setup:
-            print("Sleeping 60s due too setup (init run)...")
+            print ("Sleeping 60s due too setup (init run)...")
             sleep(60)
 
     #solr setup
@@ -139,7 +135,7 @@ def main():
         mc.run_solr(mc.solrBinDir(atlas_home), "start", mc.get_solr_zk_url(confdir), mc.solrPort(), logdir)
         print "solr started."
         if is_setup:
-            print("Sleeping 60s due too setup (init run)...")
+            print ("Sleeping 60s due too setup (init run)...")
             sleep(60)
 
         print "setting up solr collections..."
@@ -159,7 +155,7 @@ def main():
     if not is_setup:
         start_atlas_server(atlas_classpath, atlas_pid_file, jvm_logdir, jvm_opts_list, web_app_path)
         mc.wait_for_startup(confdir, 600)
-        print("Apache Atlas Server process started!!!\n")
+        print ("Apache Atlas Server process started!\n")
 
         atlas_pid_file = mc.pidFile(atlas_home)
         try:
@@ -173,10 +169,11 @@ def main():
             sys.stderr.write("No PID file found! Server is not running?\nCheck logs: /opt/apache-atlas-2.1.0/logs/application.log\n\n")
             return
 
-        while os.path.exists(atlas_pid_file):
-            sleep(1)
 
-        print("Apache Atlas stopped!\n")
+        while os.path.exists(atlas_pid_file):
+            time.sleep(1)
+
+        print ("Apache Atlas stopped!\n")
 
     else:
         process = mc.java("org.apache.atlas.web.setup.AtlasSetup", [], atlas_classpath, jvm_opts_list, jvm_logdir)
@@ -184,8 +181,6 @@ def main():
 
 
 def start_atlas_server(atlas_classpath, atlas_pid_file, jvm_logdir, jvm_opts_list, web_app_path):
-    print "Calling start atlas server"
-    print "ClassPath: " + atlas_classpath
     args = ["-app", web_app_path]
     args.extend(sys.argv[1:])
     process = mc.java("org.apache.atlas.Atlas", args, atlas_classpath, jvm_opts_list, jvm_logdir)
