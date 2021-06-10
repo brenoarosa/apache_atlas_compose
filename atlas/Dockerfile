@@ -29,8 +29,8 @@ RUN cd /tmp/ && \
     tar -xvzf apache-atlas-sources-${ATLAS_VERSION}.tar.gz 
 
 # build from source (FIXME)
-#RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} && \
-#    mvn clean -DskipTests package -Pdist,embedded-hbase-solr,berkeley-elasticsearch -B
+RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} && \
+    mvn clean -DskipTests package -Pdist -B
 
 # OR download pre built
 RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} && \
@@ -44,16 +44,24 @@ RUN tar -xzf /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/target/apache-atl
 VOLUME ["/opt/atlas/conf", "/opt/atlas/logs"]
 
 # input configuration files
-COPY atlas_start.py.patch atlas_config.py.patch ${ATLAS_HOME}/bin/
+#COPY atlas_start.py.patch atlas_config.py.patch ${ATLAS_HOME}/bin/
 
-RUN cd ${ATLAS_HOME}/bin \
-    && patch -b -f < atlas_start.py.patch \
-    && patch -b -f < atlas_config.py.patch
+#RUN cd ${ATLAS_HOME}/bin \
+#    && patch -b -f < atlas_start.py.patch \
+#    && patch -b -f < atlas_config.py.patch
+
+COPY atlas_start.py ${ATLAS_HOME}/bin/atlas_start.py
+COPY atlas_config.py ${ATLAS_HOME}/bin/atlas_config.py
 
 COPY conf/hbase/hbase-site.xml.template ${ATLAS_HOME}/conf/hbase/hbase-site.xml.template
 COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
 COPY conf/atlas-log4j.xml ${ATLAS_HOME}/conf/atlas-log4j.xml
 COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
+
+# only necessary for EC2 built jar
+#RUN rm -rf ${ATLAS_HOME}/libext/*
+
+RUN wget -qO- https://repo1.maven.org/maven2/org/janusgraph/janusgraph-es/0.5.1/janusgraph-es-0.5.1.jar > ${ATLAS_HOME}/libext/janusgraph-es-0.5.1.jar
 
 #RUN cd ${ATLAS_HOME} \
 #    && ./bin/atlas_start.py -setup || true
