@@ -9,7 +9,7 @@ services:
     environment:
       - discovery.type=single-node
     networks:
-      - atlas-test
+      - lgpd
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9200"]
       interval: 30s
@@ -26,7 +26,7 @@ services:
       - CASSANDRA_CLUSTER_NAME=cassandra
       - CASSANDRA_SEEDS=cassandra
     networks:
-      - atlas-test
+      - lgpd
     healthcheck:
       test: ["CMD", "cqlsh", "-e", "describe keyspaces" ]
       interval: 5s
@@ -43,7 +43,7 @@ services:
     ports:
       - "21000:21000"
     networks:
-      - atlas-test
+      - lgpd
     depends_on:
       elasticsearch:
         condition: service_healthy
@@ -53,5 +53,5 @@ services:
       - JAVA_HOME=/usr/lib/jvm/java-8-openjdk-amd64
 
 networks:
-  atlas-test:
+  lgpd:
     driver: bridge
