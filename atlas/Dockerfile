@@ -72,12 +72,6 @@ RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selectio
 
 COPY --from=build_stage /opt/atlas/ ${ATLAS_HOME}
 
-VOLUME ["/opt/atlas/conf", "/opt/atlas/logs"]
-
-COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
-COPY conf/atlas-log4j.xml ${ATLAS_HOME}/conf/atlas-log4j.xml
-COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
-
 # python necessary for process start
 RUN apt-get update && \
     apt-get install -y --no-install-recommends \
@@ -86,6 +80,12 @@ RUN apt-get update && \
         python && \
     apt-get clean && \
     rm -rf /var/lib/apt/lists/*
+
+VOLUME ["/opt/atlas/conf", "/opt/atlas/logs"]
+
+COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
+COPY conf/atlas-log4j.xml ${ATLAS_HOME}/conf/atlas-log4j.xml
+COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
 
 # Atlas URI Port
 EXPOSE 21000
