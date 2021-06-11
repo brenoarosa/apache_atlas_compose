@@ -69,12 +69,13 @@ COPY conf/atlas-log4j.xml ${ATLAS_HOME}/conf/atlas-log4j.xml
 COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
 
 # clean apt
-#RUN apt-get clean && \
-#    rm -rf /var/lib/apt/lists/*
+RUN apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
 # clean source files
-#RUN rm /tmp/apache-atlas-sources-${ATLAS_VERSION}.tar.gz && \
-#    rm -rf /tmp/apache-atlas-sources-${ATLAS_VERSION}/
+RUN rm /tmp/apache-atlas-sources-${ATLAS_VERSION}.tar.gz && \
+    rm -rf /tmp/apache-atlas-sources-${ATLAS_VERSION}/ && \
+    rm -rf /tmp/atlas_git/
 
 # Atlas URI Port
 EXPOSE 21000
