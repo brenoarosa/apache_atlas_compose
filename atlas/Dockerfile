@@ -85,7 +85,7 @@ VOLUME ["/opt/atlas/conf", "/opt/atlas/logs"]
 
 COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
 COPY conf/atlas-log4j.xml ${ATLAS_HOME}/conf/atlas-log4j.xml
-COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
+COPY conf/atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
 
 # Atlas URI Port
 EXPOSE 21000
