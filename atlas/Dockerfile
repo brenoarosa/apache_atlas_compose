@@ -1,4 +1,4 @@
-FROM ubuntu:18.04
+FROM ubuntu:18.04 AS build_stage
 
 ENV ATLAS_VERSION 2.1.0
 ENV TARBALL apache-atlas-${ATLAS_VERSION}-sources.tar.gz
@@ -7,21 +7,18 @@ ENV ATLAS_SOURCE https://dist.apache.org/repos/dist/release/atlas/${ATLAS_VERSIO
 ENV JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
 ENV MAVEN_OPTS="$MAVEN_OPTS -Xms2g -Xmx2g -Dorg.slf4j.simpleLogger.log.org.apache.maven.cli.transfer.Slf4jMavenTransferListener=warn"
 
-ENV ATLAS_HOME="/opt/atlas"
-
 RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
 
 RUN apt-get update \
     && apt-get -y upgrade \
-    && apt-get -y install apt-utils \
     && apt-get -y --no-install-recommends install \
         apt-utils \
-        maven \
-        wget \
         git \
-        python \
+        maven \
         openjdk-8-jdk-headless \
-        curl
+        wget \
+    && apt-get clean \
+    && rm -rf /var/lib/apt/lists/*
 
 RUN cd /tmp/ && \
     wget -qO- ${ATLAS_SOURCE} > apache-atlas-sources-${ATLAS_VERSION}.tar.gz && \
@@ -60,7 +57,20 @@ RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} && \
 
 # copy built version for output folder
 RUN tar -xzf /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/target/apache-atlas-${ATLAS_VERSION}-server.tar.gz -C /opt && \
-    mv /opt/apache-atlas-${ATLAS_VERSION}/ ${ATLAS_HOME}
+    mv /opt/apache-atlas-${ATLAS_VERSION}/ /opt/atlas/
+
+#####################################################
+############        STAGE 2              ############
+#####################################################
+
+FROM ubuntu:18.04
+
+ENV ATLAS_HOME="/opt/atlas"
+ENV JAVA_HOME="/usr/lib/jvm/java-8-openjdk-amd64"
+
+RUN echo 'debconf debconf/frontend select Noninteractive' | debconf-set-selections
+
+COPY --from=build_stage /opt/atlas/ ${ATLAS_HOME}
 
 VOLUME ["/opt/atlas/conf", "/opt/atlas/logs"]
 
@@ -68,14 +78,14 @@ COPY conf/atlas-env.sh ${ATLAS_HOME}/conf/atlas-env.sh
 COPY conf/atlas-log4j.xml ${ATLAS_HOME}/conf/atlas-log4j.xml
 COPY atlas-application.properties ${ATLAS_HOME}/conf/atlas-application.properties
 
-# clean apt
-RUN apt-get clean && \
+# python necessary for process start
+RUN apt-get update && \
+    apt-get install -y --no-install-recommends \
+        curl \
+        openjdk-8-jdk-headless \
+        python && \
+    apt-get clean && \
     rm -rf /var/lib/apt/lists/*
-
-# clean source files
-RUN rm /tmp/apache-atlas-sources-${ATLAS_VERSION}.tar.gz && \
-    rm -rf /tmp/apache-atlas-sources-${ATLAS_VERSION}/ && \
-    rm -rf /tmp/atlas_git/
 
 # Atlas URI Port
 EXPOSE 21000
