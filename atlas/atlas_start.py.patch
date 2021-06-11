@@ -1,0 +1,34 @@
+diff --git a/distro/src/bin/atlas_start.py b/distro/src/bin/atlas_start.py
+index 7cf35a92a..560f15128 100755
+--- a/distro/src/bin/atlas_start.py
++++ b/distro/src/bin/atlas_start.py
+@@ -18,6 +18,7 @@
+ import os
+ import sys
+ import traceback
++from time import sleep
+ 
+ import atlas_config as mc
+ 
+@@ -149,6 +150,21 @@ def main():
+         start_atlas_server(atlas_classpath, atlas_pid_file, jvm_logdir, jvm_opts_list, web_app_path)
+         mc.wait_for_startup(confdir, 300)
+         print("Apache Atlas Server started!!!\n")
++
++        atlas_pid_file = mc.pidFile(atlas_home)
++        try:
++            with open(atlas_pid_file, "r") as pf:
++                pid = int(pf.read().strip())
++                print("Running Apache Atlas with PID " + str(pid) + "...\n")
++        except:
++            print("No PID file found! Server is not running?\n")
++            return
++
++        while os.path.exists(atlas_pid_file):
++            sleep(1)
++
++        print("Apache Atlas stopped!\n")
++
+     else:
+         process = mc.java("org.apache.atlas.web.setup.AtlasSetup", [], atlas_classpath, jvm_opts_list, jvm_logdir)
+         return process.wait()

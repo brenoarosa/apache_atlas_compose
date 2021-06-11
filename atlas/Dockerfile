@@ -37,11 +37,17 @@ RUN cd /tmp/ && \
     cd atlas_git/ && \
     git checkout 01f5eea5c
 
+# patch atlas_start.py to keep alive while atlas process is running
+# otherwise the container will stop right afeter after the process starte
+COPY atlas_start.py.patch /tmp/atlas_git/atlas_start.py.patch
+RUN cd /tmp/atlas_git/ && \
+    git apply atlas_start.py.patch
+
 # fixes python scripts
 RUN rm -rf /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/src/bin/ && \
     cp -r /tmp/atlas_git/distro/src/bin/ /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/src/
 
-# fixes dependency versions in 2.1.0 release code
+# fixes dependency versions
 RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} \
     && sed -i "s/<zookeeper.version>3.4.6<\/zookeeper.version>/<zookeeper.version>3.5.5<\/zookeeper.version>/" pom.xml \
     && sed -i "s/<elasticsearch.version>5.6.4<\/elasticsearch.version>/<elasticsearch.version>6.6.0<\/elasticsearch.version>/" pom.xml
@@ -50,7 +56,7 @@ RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} \
 
 # build from source
 RUN cd /tmp/apache-atlas-sources-${ATLAS_VERSION} && \
-    mvn clean -DskipTests package -Pdist -B
+    mvn clean package -DskipTests -Pdist -B
 
 # copy built version for output folder
 RUN tar -xzf /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/target/apache-atlas-${ATLAS_VERSION}-server.tar.gz -C /opt && \
