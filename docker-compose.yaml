@@ -45,9 +45,6 @@ services:
       - ZOO_SERVERS=server.1=zookeeper:2888:3888
     networks:
       - lgpd
-    volumes:
-      - ./data/zookeeper/data:/data
-      - ./data/zookeeper/datalog:/datalog
 
   kafka:
     image: confluentinc/cp-kafka:5.5.1
@@ -66,8 +63,6 @@ services:
       - lgpd
     depends_on:
       - zookeeper
-    volumes:
-      - ./data/kafka/data:/var/lib/kafka/data
     healthcheck:
       test: ["CMD", "kafka-topics", "--list", "--zookeeper", "zookeeper:2181"]
       interval: 30s
