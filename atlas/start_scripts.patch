@@ -1,0 +1,72 @@
+diff --git a/distro/src/bin/atlas_config.py b/distro/src/bin/atlas_config.py
+index 493a34ad8..76429afe7 100755
+--- a/distro/src/bin/atlas_config.py
++++ b/distro/src/bin/atlas_config.py
+@@ -254,11 +254,14 @@ def runProcess(commandline, logdir=None, shell=False, wait=False):
+     timestr = time.strftime("atlas.%Y%m%d-%H%M%S")
+     stdoutFile = None
+     stderrFile = None
++
++    stdoutFile = subprocess.PIPE
++    stderrFile = subprocess.STDOUT
+     if logdir:
+         stdoutFile = open(os.path.join(logdir, timestr + ".out"), "w")
+         stderrFile = open(os.path.join(logdir,timestr + ".err"), "w")
+ 
+-    p = subprocess.Popen(commandline, stdout=stdoutFile, stderr=stderrFile, shell=shell)
++    p = subprocess.Popen(commandline, stdout=subprocess.PIPE, stderr=subprocess.STDOUT, shell=shell)
+ 
+     if wait:
+         p.communicate()
+diff --git a/distro/src/bin/atlas_start.py b/distro/src/bin/atlas_start.py
+index 7cf35a92a..8ef5b2701 100755
+--- a/distro/src/bin/atlas_start.py
++++ b/distro/src/bin/atlas_start.py
+@@ -18,6 +18,8 @@
+ import os
+ import sys
+ import traceback
++import subprocess
++from time import sleep
+ 
+ import atlas_config as mc
+ 
+@@ -146,9 +148,27 @@ def main():
+     if (mc.isCygwin()):
+         web_app_path = mc.convertCygwinPath(web_app_path)
+     if not is_setup:
+-        start_atlas_server(atlas_classpath, atlas_pid_file, jvm_logdir, jvm_opts_list, web_app_path)
+-        mc.wait_for_startup(confdir, 300)
+-        print("Apache Atlas Server started!!!\n")
++        print("Starting Atlas Server...")
++        sys.stdout.flush()
++        process = start_atlas_server(atlas_classpath, atlas_pid_file, jvm_logdir=None,
++                                    jvm_opts_list=jvm_opts_list, web_app_path=web_app_path)
++
++        # python3
++        if hasattr(sys.stdout, 'buffer'):
++            stdout_write_func = sys.stdout.buffer.write
++        # python 2
++        else:
++            stdout_write_func = sys.stdout.write
++
++        # continuously pass stdout between process until the atlas process stops
++        for c in iter(lambda: process.stdout.read(1), b''):
++            stdout_write_func(c)
++            sys.stdout.flush()
++
++        process.poll()
++        print("Apache Atlas Server finished with exit code:" + str(process.returncode) + " !")
++        return process.returncode
++
+     else:
+         process = mc.java("org.apache.atlas.web.setup.AtlasSetup", [], atlas_classpath, jvm_opts_list, jvm_logdir)
+         return process.wait()
+@@ -159,6 +179,7 @@ def start_atlas_server(atlas_classpath, atlas_pid_file, jvm_logdir, jvm_opts_lis
+     args.extend(sys.argv[1:])
+     process = mc.java("org.apache.atlas.Atlas", args, atlas_classpath, jvm_opts_list, jvm_logdir)
+     mc.writePid(atlas_pid_file, process)
++    return process
+ 
+ if __name__ == '__main__':
+     try:

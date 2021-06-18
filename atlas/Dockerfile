@@ -36,9 +36,9 @@ RUN cd /tmp/ && \
 
 # patch atlas_start.py to keep alive while atlas process is running
 # otherwise the container will stop right afeter after the process starte
-COPY atlas_start.py.patch /tmp/atlas_git/atlas_start.py.patch
+COPY start_scripts.patch /tmp/atlas_git/start_scripts.patch
 RUN cd /tmp/atlas_git/ && \
-    git apply atlas_start.py.patch
+    git apply start_scripts.patch
 
 # fixes python scripts
 RUN rm -rf /tmp/apache-atlas-sources-${ATLAS_VERSION}/distro/src/bin/ && \
