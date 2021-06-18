@@ -95,12 +95,12 @@
 
     <logger name="org.apache.atlas" additivity="false">
         <level value="info"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="console"/>
     </logger>
 
     <logger name="org.janusgraph" additivity="false">
         <level value="warn"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="console"/>
     </logger>
 
     <logger name="org.springframework" additivity="false">
@@ -121,7 +121,7 @@
     <!-- to avoid logs - The configuration log.flush.interval.messages = 1 was supplied but isn't a known config -->
     <logger name="org.apache.kafka.common.config.AbstractConfig" additivity="false">
         <level value="error"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="console"/>
     </logger>
 
     <logger name="AUDIT" additivity="false">
@@ -146,7 +146,7 @@
 
     <root>
         <priority value="warn"/>
-        <appender-ref ref="FILE"/>
+        <appender-ref ref="console"/>
     </root>
 
 </log4j:configuration>
